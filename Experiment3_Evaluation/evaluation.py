@@ -90,12 +90,12 @@ def NDCG_eval(qrels_dict, test_dict, k = 100):
             
         #IDCG  我们只需要关注相关的就可以了
         IDCG = 0
-        new_value = sorted([item for item in value if item in relevant_list],key = lambda x:-qrels_dict[key][x])
+        new_value = sorted([item for item in value[0:k] if item in relevant_list],key = lambda x:-qrels_dict[key][x])
         for i in range(min(len(new_value),k)):
             rel = 0
             if qrels_dict[key].__contains__(new_value[i]):#其实一定在 因为我们只关注相关的文档
                 rel = qrels_dict[key][new_value[i]]
-            if i==0 : DCG+=rel
+            if i==0 : IDCG+=rel
             elif rel != 0:
                 IDCG += rel/math.log(i+1,2)
         try:
@@ -119,7 +119,6 @@ def evaluation():
     file_test_path = 'result.txt'
     # test_dict = {query_id:[doc_id, doc_id, ...], ...}
     test_dict = read_tweetid_test(file_test_path)
-    print(test_dict)
     MAP = MAP_eval(qrels_dict, test_dict, k)
     print('MAP', ' = ', MAP, sep='')
     MRR = MRR_eval(qrels_dict, test_dict, k)
